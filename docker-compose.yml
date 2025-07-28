@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  jmeter-analyzer:
+    image: jmeter-analyzer:latest
+    container_name: jmeter-analyzer
+    volumes:
+      - ./plans:/app/plans
+      - ./results:/app/results
+    environment:
+      - JMETER_HOME=/opt/jmeter
+      - RESULTS_DIR=/app/results
+    entrypoint: ["sh", "-c", "java -Xmx1g -jar analyzer.jar /app/plans"]
