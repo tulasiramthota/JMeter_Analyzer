@@ -17,6 +17,7 @@ RUN ls -l /workspace/target
 FROM eclipse-temurin:17.0.7_7-jdk-jammy AS jmeter
 WORKDIR /opt
 ENV JMETER_VERSION=5.6.3
+ENV CMDRUNNER_VERSION=2.3
 
 # Install required tools
 RUN apt-get update && apt-get install -y wget unzip && apt-get clean
@@ -30,8 +31,14 @@ RUN set -x && \
 
 # Install JMeter Plugins Manager
 RUN set -x && \
-    wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar && \
-    wget https://jmeter-plugins.org/files/cmdrunner/ -O /opt/jmeter/lib/cmdrunner-2.2.jar && \
+    wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar
+
+# Download cmdrunner from Maven Central
+RUN set -x && \
+    wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/${CMDRUNNER_VERSION}/cmdrunner-${CMDRUNNER_VERSION}.jar -O /opt/jmeter/lib/cmdrunner-${CMDRUNNER_VERSION}.jar
+
+# Install JMeter Plugins Manager CLI wrapper
+RUN set -x && \
     java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
 
 # Install Custom Thread Groups plugin
