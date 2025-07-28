@@ -13,27 +13,14 @@ RUN mvn clean package -DskipTests
 # Debugging step: List contents of the target directory
 RUN ls -l /workspace/target
 
-# Stage 2: Prepare JMeter
-FROM eclipse-temurin:17.0.7_7-jdk-jammy AS jmeter
-WORKDIR /opt
-
-# Copy pre-downloaded JMeter and plugins
-COPY /workspace/jmeter/apache-jmeter-5.6.3 /opt/jmeter
-
-
-# Stage 3: Final image
+# Stage 2: Final image
 FROM eclipse-temurin:17.0.7_7-jdk-jammy
 WORKDIR /app
-
-# Copy JMeter
-COPY --from=jmeter /opt/jmeter /opt/jmeter
 
 # Copy analyzer jar
 COPY --from=builder /workspace/target/JMeter_Analyzer-1.0.jar /app/analyzer.jar
 
-# Copy any JMX plans into /app/plans at container build or mount at runtime
-# COPY plans /app/plans
-
+# Set environment variables
 ENV JMETER_HOME=/opt/jmeter
 ENV RESULTS_DIR=/app/results
 
