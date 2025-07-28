@@ -18,7 +18,7 @@ FROM eclipse-temurin:17.0.7_7-jdk-jammy AS jmeter
 WORKDIR /opt
 
 # Copy pre-downloaded JMeter and plugins
-COPY jmeter/apache-jmeter-5.6.3 /opt/jmeter
+COPY /workspace/jmeter/apache-jmeter-5.6.3 /opt/jmeter
 
 
 # Stage 3: Final image
