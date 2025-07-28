@@ -18,19 +18,28 @@ FROM eclipse-temurin:17.0.7_7-jdk-jammy AS jmeter
 WORKDIR /opt
 ENV JMETER_VERSION=5.6.3
 
-# Install JMeter and required plugins
-RUN apt-get update && apt-get install -y wget unzip \
-    && wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.zip \
-    && unzip apache-jmeter-${JMETER_VERSION}.zip \
-    && mv apache-jmeter-${JMETER_VERSION} jmeter \
-    && rm apache-jmeter-${JMETER_VERSION}.zip \
-    && wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar \
-    && wget https://jmeter-plugins.org/files/cmdrunner/ -O /opt/jmeter/lib/cmdrunner-2.2.jar \
-    && java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller \
-    && java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-casutg \
-    && apt-get remove -y wget unzip \
-    && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
+# Install required tools
+RUN apt-get update && apt-get install -y wget unzip && apt-get clean
 
+# Download and install JMeter
+RUN set -x && \
+    wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.zip && \
+    unzip apache-jmeter-${JMETER_VERSION}.zip && \
+    mv apache-jmeter-${JMETER_VERSION} jmeter && \
+    rm apache-jmeter-${JMETER_VERSION}.zip
+
+# Install JMeter Plugins Manager
+RUN set -x && \
+    wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar && \
+    wget https://jmeter-plugins.org/files/cmdrunner/ -O /opt/jmeter/lib/cmdrunner-2.2.jar && \
+    java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
+
+# Install Custom Thread Groups plugin
+RUN set -x && \
+    java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMD install jpgc-casutg
+
+# Clean up
+RUN apt-get remove -y wget unzip && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Final image
 FROM eclipse-temurin:17.0.7_7-jdk-jammy
