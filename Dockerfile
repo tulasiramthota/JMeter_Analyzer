@@ -16,33 +16,10 @@ RUN ls -l /workspace/target
 # Stage 2: Prepare JMeter
 FROM eclipse-temurin:17.0.7_7-jdk-jammy AS jmeter
 WORKDIR /opt
-ENV JMETER_VERSION=5.6.3
-ENV CMDRUNNER_VERSION=2.3
 
-# Install required tools
-RUN apt-get update && apt-get install -y wget unzip && apt-get clean
+# Copy pre-downloaded JMeter and plugins
+COPY jmeter/apache-jmeter-5.6.3 /opt/jmeter
 
-# Download and install JMeter
-RUN set -x && \
-    wget https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.zip && \
-    unzip apache-jmeter-${JMETER_VERSION}.zip && \
-    mv apache-jmeter-${JMETER_VERSION} jmeter && \
-    rm apache-jmeter-${JMETER_VERSION}.zip
-
-# Install JMeter Plugins Manager
-RUN set -x && \
-    wget https://jmeter-plugins.org/get/ -O /opt/jmeter/lib/ext/jmeter-plugins-manager.jar
-
-# Download cmdrunner from Maven Central
-RUN set -x && \
-    wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/${CMDRUNNER_VERSION}/cmdrunner-${CMDRUNNER_VERSION}.jar -O /opt/jmeter/lib/ext/cmdrunner-${CMDRUNNER_VERSION}.jar
-
-# Install JMeter Plugins Manager CLI wrapper
-RUN set -x && \
-    java -cp /opt/jmeter/lib/ext/jmeter-plugins-manager.jar org.jmeterplugins.repository.PluginManagerCMDInstaller
-
-# Clean up
-RUN apt-get remove -y wget unzip && apt-get autoremove -y && rm -rf /var/lib/apt/lists/*
 
 # Stage 3: Final image
 FROM eclipse-temurin:17.0.7_7-jdk-jammy
