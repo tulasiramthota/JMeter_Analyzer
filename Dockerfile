@@ -35,7 +35,7 @@ RUN set -x && \
 
 # Download cmdrunner from Maven Central
 RUN set -x && \
-    wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/${CMDRUNNER_VERSION}/cmdrunner-${CMDRUNNER_VERSION}.jar -O /opt/jmeter/lib/cmdrunner-${CMDRUNNER_VERSION}.jar
+    wget https://repo1.maven.org/maven2/kg/apc/cmdrunner/${CMDRUNNER_VERSION}/cmdrunner-${CMDRUNNER_VERSION}.jar -O /opt/jmeter/lib/ext/cmdrunner-${CMDRUNNER_VERSION}.jar
 
 # Install JMeter Plugins Manager CLI wrapper
 RUN set -x && \
